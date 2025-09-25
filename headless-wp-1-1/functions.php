@@ -648,6 +648,56 @@ add_action('graphql_register_types', function () {
 });
 
 
+// Patch polylang for wc pricy problem
+
+/**
+ * WPGraphQL language fallback for WooCommerce Products
+ * Works when Polylang for WooCommerce is NOT installed
+ */
+add_action('graphql_register_types', function () {
+    include_once ABSPATH . 'wp-admin/includes/plugin.php';
+
+    if (is_plugin_active('polylang-wc/polylang-wc.php')) {
+        return; // Plugin is active, no need to patch
+    }
+
+    // Default site language (convert WP locale to simple code, e.g. en_US → en)
+    $default_lang = substr(get_locale(), 0, 2);
+
+    // 1. Register a Language type
+    register_graphql_object_type('Language', [
+        'description' => __('Fallback language object when Polylang WC is not active', 'your-textdomain'),
+        'fields' => [
+            'code' => [
+                'type' => 'String',
+                'description' => __('Language code (e.g. en, de, fr)', 'your-textdomain'),
+            ],
+        ],
+    ]);
+
+    // 2. Add the language field to WooCommerce-related types
+    $types_to_patch = [
+        'Product' => 'product',
+        'ProductCategory' => 'productCategory',
+        'ProductTag' => 'productTag',
+    ];
+
+    foreach ($types_to_patch as $label => $type_name) {
+        register_graphql_field($type_name, 'language', [
+            'type' => 'Language',
+            'description' => sprintf('Fallback language for %s when Polylang WC is not active', $label),
+            'resolve' => function ($root) use ($default_lang) {
+                return [
+                    'code' => $default_lang,
+                ];
+            },
+        ]);
+    }
+});
+
+
+
+
 
 // Fix buttons with no links for audits
 add_filter('render_block', function ($block_content, $block) {
