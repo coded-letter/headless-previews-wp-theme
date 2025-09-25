@@ -1,0 +1,248 @@
+/*
+Theme Name: Headless Previews
+Theme URI: https://github.com/coded-letter/headless-previews-wp-theme
+Author: Coded Letter
+Author URI: https://codedletter.com
+Description: A minimal theme for headless WordPress with previews supporting tailwind CSS and redirection / rebuild options.
+Requires at least: 6.7
+Tested up to: 6.7
+Requires PHP: 7.2
+Version: 1.1.1
+License: GNU General Public License v2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
+Text Domain: headless-previews
+Tags: one-column, custom-colors, custom-menu, custom-logo, editor-style, featured-images, full-site-editing, block-patterns, rtl-language-support, sticky-post, threaded-comments, translation-ready, wide-blocks, block-styles, style-variations, accessibility-ready, blog, portfolio, news, e-commerce
+*/
+
+/* Custom styles for TOC and ribbon */
+.preview-ribbon {
+  position: fixed;
+  top: 0;
+  right: 0;
+  background: #ff0;
+  color: #000;
+  padding: 0.25rem 0.5rem;
+  font-weight: bold;
+  z-index: 9999;
+}
+
+.toc {
+  position: fixed;
+  top: 3rem;
+  right: 1rem;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 1rem;
+  max-width: 200px;
+  overflow-y: auto;
+  max-height: 80vh;
+  border-radius: 0.5rem;
+}
+
+@font-face {
+  font-family: "Switzer-Light";
+  font-display: swap;
+  src: url("/wp-content/themes/headless-wp/fonts/Switzer-Light.otf")
+      format("opentype"),
+    url("/wp-content/themes/headless-wp/fonts/Switzer-Light.woff2")
+      format("woff2"),
+    /* Super Modern Browsers */
+      url("/wp-content/themes/headless-wp/fonts/Switzer-Light.woff")
+      format("woff"),
+    /* Modern Browsers */
+      url("/wp-content/themes/headless-wp/fonts/Switzer-Light.ttf")
+      format("truetype"); /* Safari, Android, iOS */
+}
+
+@font-face {
+  font-family: "Switzer-Regular";
+  font-display: swap;
+  src: url("/wp-content/themes/headless-wp/fonts/Switzer-Regular.otf")
+      format("opentype"),
+    url("/wp-content/themes/headless-wp/fonts/Switzer-Regular.woff2")
+      format("woff2"),
+    /* Super Modern Browsers */
+      url("/wp-content/themes/headless-wp/fonts/Switzer-Regular.woff")
+      format("woff"),
+    /* Modern Browsers */
+      url("/wp-content/themes/headless-wp/fonts/Switzer-Regular.ttf")
+      format("truetype"); /* Safari, Android, iOS */
+}
+
+@font-face {
+  font-family: "Switzer-Italic";
+  font-display: swap;
+  src: url("/wp-content/themes/headless-wp/fonts/Switzer-Italic.otf")
+      format("opentype"),
+    url("/wp-content/themes/headless-wp/fonts/Switzer-Italic.woff2")
+      format("woff2"),
+    /* Super Modern Browsers */
+      url("/wp-content/themes/headless-wp/fonts/Switzer-Italic.woff")
+      format("woff"),
+    /* Modern Browsers */
+      url("/wp-content/themes/headless-wp/fonts/Switzer-Italic.ttf")
+      format("truetype"); /* Safari, Android, iOS */
+}
+
+@font-face {
+  font-family: "Switzer-Bold";
+  font-display: swap;
+  src: url("/wp-content/themes/headless-wp/fonts/Switzer-Bold.otf")
+      format("opentype"),
+    url("/wp-content/themes/headless-wp/fonts/Switzer-Bold.woff2")
+      format("woff2"),
+    /* Super Modern Browsers */
+      url("/wp-content/themes/headless-wp/fonts/Switzer-Bold.woff")
+      format("woff"),
+    /* Modern Browsers */
+      url("/wp-content/themes/headless-wp/fonts/Switzer-Bold.ttf")
+      format("truetype"); /* Safari, Android, iOS */
+}
+
+@font-face {
+  font-family: "Afronaut-Regular";
+  font-display: swap;
+  src: url("/wp-content/themes/headless-wp/fonts/shroom2.otf")
+      format("opentype"),
+    url("/wp-content/themes/headless-wp/fonts/shroom2.woff2") format("woff2"),
+    /* Super Modern Browsers */
+      url("/wp-content/themes/headless-wp/fonts/shroom2.woff") format("woff"),
+    /* Modern Browsers */
+      url("/wp-content/themes/headless-wp/fonts/shroom2.ttf") format("truetype"),
+    /* Safari, Android, iOS */
+      url("/wp-content/themes/headless-wp/fonts/shroom2.svg#Untitled1")
+      format("svg");
+}
+
+p,
+a,
+ul,
+li,
+span,
+button,
+div {
+  font-family: "Switzer-Light", "DMSans-Regular", "Lato" !important;
+}
+b,
+strong {
+  font-family: "Switzer-Bold", "DMSans-Bold", "Lato" !important;
+}
+i {
+  font-family: "Switzer-Italic", "DMSans-Italic", "Lato" !important;
+  font-weight: 400;
+}
+
+/* Heading */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Switzer-Light", "DMSans-Regular", "Lato" !important;
+}
+
+.afro {
+  font-family: "Afronaut-Regular", "Lato" !important;
+  font-weight: 500 !important;
+}
+
+.btn-main {
+  background: white !important;
+  border-radius: 45px !important;
+  border: 1px solid #111 !important;
+  color: #111 !important;
+  font-size: 1rem !important;
+  font-weight: 400 !important;
+}
+
+.dark .btn-main {
+  background: #111 !important;
+  border-radius: 45px !important;
+  border: 1px solid white !important;
+  color: #fff !important;
+}
+
+.pill-color {
+  background-color: white !important;
+  border-radius: 45px !important;
+  border: 1px solid black !important;
+  color: black !important;
+}
+.dark .pill-color {
+  background-color: #111 !important;
+  border-radius: 45px !important;
+  border: 1px solid white !important;
+  color: #fff !important;
+}
+.pill-color:nth-child(4n + 2) {
+  background-color: #ffd36d !important;
+  color: #111 !important;
+}
+
+.pill-color:nth-child(4n + 4) {
+  background-color: #80c38c !important;
+  color: #111 !important;
+}
+
+.pill-color:nth-child(4n + 6) {
+  background-color: #e8764e !important;
+  color: #111 !important;
+}
+
+.pill-color:nth-child(4n + 8) {
+  background-color: #d25f9f !important;
+  color: #111 !important;
+}
+
+.dark .btn-main:hover,
+.dark .wp-element-button:hover,
+.dark .pill-color:hover {
+  background: #99bed7 !important;
+  border: 1px solid #99bed7 !important;
+  color: #111 !important;
+}
+
+.btn-main:hover,
+.wp-element-button:hover,
+.pill-color:hover {
+  background: #ffd36d !important;
+  border: 1px solid #ffd36d !important;
+  color: #111 !important;
+}
+
+.btn-main.active-page {
+  background: #ffd36d !important;
+  border: 1px solid #ffd36d !important;
+  color: #111 !important;
+}
+
+.dark .btn-main.active-page {
+  background: #99bed7 !important;
+  border: 1px solid #99bed7 !important;
+  color: #111 !important;
+}
+
+.border {
+  border: 1px solid #111;
+  opacity: 1px !important;
+  margin: -0.5px !important;
+}
+
+.dark .border {
+  border: 1px solid #fcfaf6;
+}
+
+.mb-0 {
+  margin-bottom: 0px !important;
+}
+.checkout .mt-2 {
+  margin-top: 0.75rem !important;
+}
+
+.product-card ul,
+.product-card li {
+  list-style: none !important;
+  list-style-position: inside !important;
+  list-style-image: url(/gwiazdka.svg) !important;
+}
