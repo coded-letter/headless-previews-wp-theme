@@ -648,34 +648,58 @@ add_action('graphql_register_types', function () {
 });
 
 
-// Patch polylang for wc pricy problem
 
 /**
- * WPGraphQL language fallback for WooCommerce Products
+ * WPGraphQL language fallback for WooCommerce Products, Categories & Tags
  * Works when Polylang for WooCommerce is NOT installed
  */
 add_action('graphql_register_types', function () {
     include_once ABSPATH . 'wp-admin/includes/plugin.php';
 
+    // If Polylang WC is active → do nothing
     if (is_plugin_active('polylang-wc/polylang-wc.php')) {
-        return; // Plugin is active, no need to patch
+        return;
     }
 
-    // Default site language (convert WP locale to simple code, e.g. en_US → en)
-    $default_lang = substr(get_locale(), 0, 2);
+    // --- Detect default language ---
+    if (function_exists('PLL') && isset(PLL()->options['default_lang'])) {
+        $default_lang = strtolower(PLL()->options['default_lang']); // ✅ lowercase (matches enum)
+    } else {
+        $default_lang = strtolower(substr(get_locale(), 0, 2));
+    }
 
-    // 1. Register a Language type
+    /**
+     * 1. Register Language object
+     * Wraps the enum so queries can use `language { code }`
+     */
     register_graphql_object_type('Language', [
         'description' => __('Fallback language object when Polylang WC is not active', 'your-textdomain'),
         'fields' => [
             'code' => [
-                'type' => 'String',
+                'type' => 'LanguageCodeEnum',
                 'description' => __('Language code (e.g. en, de, fr)', 'your-textdomain'),
             ],
         ],
     ]);
 
-    // 2. Add the language field to WooCommerce-related types
+    /**
+     * 2. Register Translation object
+     */
+    register_graphql_object_type('Translation', [
+        'description' => __('Fallback translation object when Polylang WC is not active', 'your-textdomain'),
+        'fields' => [
+            'id' => ['type' => 'ID'],
+            'uri' => ['type' => 'String'],
+            'language' => [
+                'type' => 'Language',
+                'description' => __('Language object for the translation', 'your-textdomain'),
+            ],
+        ],
+    ]);
+
+    /**
+     * 3. Patch WooCommerce types: Product, ProductCategory, ProductTag
+     */
     $types_to_patch = [
         'Product' => 'product',
         'ProductCategory' => 'productCategory',
@@ -683,17 +707,37 @@ add_action('graphql_register_types', function () {
     ];
 
     foreach ($types_to_patch as $label => $type_name) {
+        // language field
         register_graphql_field($type_name, 'language', [
             'type' => 'Language',
             'description' => sprintf('Fallback language for %s when Polylang WC is not active', $label),
-            'resolve' => function ($root) use ($default_lang) {
+            'resolve' => function () use ($default_lang) {
                 return [
                     'code' => $default_lang,
                 ];
             },
         ]);
+
+        // translations field
+        register_graphql_field($type_name, 'translations', [
+            'type' => ['list_of' => 'Translation'],
+            'description' => sprintf('Fallback translations for %s when Polylang WC is not active', $label),
+            'resolve' => function ($root) use ($default_lang) {
+                return [
+                    [
+                        'id' => (string) $root->ID,
+                        'uri' => get_permalink($root->ID),
+                        'language' => [
+                            'code' => $default_lang,
+                        ],
+                    ],
+                ];
+            },
+        ]);
     }
 });
+
+
 
 
 
